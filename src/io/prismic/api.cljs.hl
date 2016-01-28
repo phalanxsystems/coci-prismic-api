@@ -1,0 +1,69 @@
+(ns io.prismic.api
+  (:require-macros
+    [adzerk.env :as env]))
+
+(env/def
+  PRISMIC_URL :required)
+
+(defc  ref-url     PRISMIC_URL)
+(defc= search-url  (str ref-url "/documents/search"))
+
+(with-init!
+  (with-timeout 5000
+    (reset! ref-url "https://coci-team-test.prismic.io/api")))
+
+(def query (fn [cell data & [url]]
+              (let [url       (or url @search-url)]
+                (spy->> "prismic" url)
+                (.getJSON
+                  js/jQuery
+                  url
+                  data
+                  #(let [r (js->clj %1 :keywordize-keys true)] (reset! cell r))))))
+
+(defn get-channels [cell ref & [url]]
+  (let [q       "[[:d = at(my.container.channel, \"yes\")]]"
+        data    (clj->js {:q q :ref ref})]
+    (query cell data url)))
+
+(defn get-all-containers [cell ref & [url]]
+  (let [q       "[[:d = at(document.type, \"container\")]]"
+        data    (clj->js {:q q :ref ref})]
+    (query cell data url)))
+
+(defn get-all-authors [cell ref & [url]]
+  (let [q       "[[:d = at(document.type, \"author\")]]"
+        data    (clj->js {:q q :ref ref})]
+    (query cell data url)))
+
+(defn get-articles-by-container-id [cell ref id & [url]]
+; (spy->> "[container]" id)
+  (let [q     (str "[[:d = at(my.article.contained_in.container, \"" id "\")]]")
+        data  (clj->js {:q q :ref ref})]
+    (query cell data url)))
+
+(defn get-containers [cell ref ids & [url]]
+  (let [idlist  (clojure.string/join "\" , \"" ids)
+        q       (str "[[:d = any(document.id, [\"" idlist "\"])]]")
+        data    (clj->js {:q q :ref ref})]
+    (query cell data url)))
+
+(defn get-container [cell ref id & [url]]
+  (let [q       (str "[[:d = at(document.id, \"" id "\")]]")
+        data    (clj->js {:q q :ref ref})]
+    (query cell data url)))
+
+(defn get-nav [cell ref which & [url]]
+  (let [q       "[:d = at(document.type, \"nav\")]"
+        q       (str q "[:d = at(my.nav.id, \"" which "\")]")
+        q       (str "[" q "]")
+        data    (clj->js {:ref ref :q q})]
+    (query cell data url)))
+
+(defn get-refs [cell & [url]]
+  (let [url     (or url @ref-url)]
+    (.getJSON
+      js/jQuery
+      url
+      #(let [r (js->clj %1 :keywordize-keys true)]
+        (reset! cell r)))))
