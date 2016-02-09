@@ -8,13 +8,8 @@
 (defc  ref-url     PRISMIC_URL)
 (defc= search-url  (str ref-url "/documents/search"))
 
-(with-init!
-  (with-timeout 5000
-    (reset! ref-url "https://coci-team-test.prismic.io/api")))
-
 (def query (fn [cell data & [url]]
               (let [url       (or url @search-url)]
-                (spy->> "prismic" url)
                 (.getJSON
                   js/jQuery
                   url

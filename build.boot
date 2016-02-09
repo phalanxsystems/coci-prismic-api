@@ -13,8 +13,8 @@
 
 
 (task-options!
-  pom    {:project 'coci-prismic-api
-          :version "0.1.0"
+  pom    {:project 'coci/coci-prismic-api
+          :version "0.1.1"
           :description "prismic api for chabad on campus content projects"}
   hoplon {:manifest true})
 
