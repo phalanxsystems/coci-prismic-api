@@ -16,8 +16,11 @@
                   data
                   #(let [r (js->clj %1 :keywordize-keys true)] (reset! cell r))))))
 
-(defn get-channels [cell ref & [url]]
-  (let [q       "[[:d = at(my.container.channel, \"yes\")]]"
+(defn get-channels [cell ref uids & [url]]
+  (let [uidlist (when uids (clojure.string/join "\" , \"" uids))
+        q1      "[[:d = at(my.container.channel, \"yes\")]]"
+        q2      (when uidlist (str "[[:d = any(document.id, [\"" uidlist "\"])]]"))
+        q       (str "[" q1 q2 "]")
         data    (clj->js {:q q :ref ref})]
     (query cell data url)))
 
