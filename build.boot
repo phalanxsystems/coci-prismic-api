@@ -16,7 +16,7 @@
   pom    {:project 'coci/coci-prismic-api
           :version "0.1.8"
           :description "prismic api for chabad on campus content projects"}
-  push   {:repository "clojars-upload"}
+  push   {:repo "clojars-upload"}
   hoplon {:manifest true})
 
 (deftask build-jar
