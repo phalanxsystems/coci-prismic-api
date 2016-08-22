@@ -14,7 +14,7 @@
 
 (task-options!
   pom    {:project 'coci/coci-prismic-api
-          :version "0.1.8"
+          :version "0.1.12"
           :description "prismic api for chabad on campus content projects"}
   push   {:repo "clojars-upload"}
   hoplon {:manifest true})

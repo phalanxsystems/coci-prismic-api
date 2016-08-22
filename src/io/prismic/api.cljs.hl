@@ -18,7 +18,7 @@
 
 (defn get-channels [cell ref uids & [url]]
   (let [uidlist (when uids (clojure.string/join "\" , \"" uids))
-        q1      "[:d = at(my.container.channel, \"yes\")]"
+        q1      "[:d = any(document.tags, [\"channel\"])]"
         q2      (when uidlist (str "[:d = any(my.container.uid, [\"" uidlist "\"])]"))
         q       (str "[" q1 q2 "]")
         data    (clj->js {:q q :ref ref})]
@@ -59,6 +59,11 @@
 (defn get-nav [cell ref & [url]]
   (let [q       "[:d = at(document.type, \"nav\")]"
         q       (str "[" q "]")
+        data    (clj->js {:ref ref :q q})]
+    (query cell data url)))
+
+(defn get-network [cell ref & [url]]
+  (let [q       "[[:d = at(document.type, \"network\")]]"
         data    (clj->js {:ref ref :q q})]
     (query cell data url)))
 
